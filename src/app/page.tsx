@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { gql, useQuery } from '@apollo/client';
 import Image from 'next/image';
@@ -36,7 +36,7 @@ const GET_POKEMON = gql`
   }
 `;
 
-export default function Home() {
+function PokemonSearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get('name') || '';
@@ -58,7 +58,6 @@ export default function Home() {
   };
 
   const handleEvolutionClick = (name: string) => {
-    console.log(data);
     setInput(name.toLowerCase());
     setSearch(name.toLowerCase());
     router.push(`/?name=${name.toLowerCase()}`);
@@ -178,5 +177,13 @@ export default function Home() {
         search && !loading && <p className="text-black">No Pokemon found with that name.</p>
       )}
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<p>Loading search parameters...</p>}>
+      <PokemonSearch />
+    </Suspense>
   );
 }
